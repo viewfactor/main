@@ -211,12 +211,12 @@ void Tutorial::initScene(InitialCameraData& camera_data)
 	std::string camera_name, camera_name1;
 	
     {
-		camera_name = "pinhole_camera";  //for source
+		camera_name = "pinhole_camera";  //for source,calculation
 		camera_name1 = "random_camera"; // for visualization
 	}
 
 	Program ray_gen_program_source = m_context->createProgramFromPTXFile(m_ptx_path, camera_name1);//Optix library provides us ray generation toolbox.
-	m_context->setRayGenerationProgram(0, ray_gen_program_source);	//camera represents ray source center.,type of rays
+	m_context->setRayGenerationProgram(0, ray_gen_program_source);	//camera represents ray source center.,type of rays calculation or visualization
 
 	Program ray_gen_program = m_context->createProgramFromPTXFile(m_ptx_path, camera_name);
 
@@ -374,9 +374,9 @@ void Tutorial::initScene(InitialCameraData& camera_data)
 
 	// Set up camera
 
-	float3 eyee = make_float3(-18.0f, 14.0f, 18.0f);	//???
-	float3 lookkat = make_float3(0.0f, 6.0f, 0.0f);
-
+	float3 eyee = make_float3(-18.0f, 14.0f, 18.0f);	//to create a vector, we determine camera  as a start point
+	float3 lookkat = make_float3(0.0f, 6.0f, 0.0f);		//target is the lookat point. This is for initialization.
+								//Because we need to specify a starting point.Target can be anywhere.
 	camera_data = InitialCameraData(eyee,   // eye 
 		lookkat,  // lookat
 		make_float3(0.0f, 1.0f, 0.0f),//  up
@@ -385,9 +385,9 @@ void Tutorial::initScene(InitialCameraData& camera_data)
 	radiuss = (lookkat - eyee);
 
 	//m_context["new_eye"]->setFloat(eyee);
-	m_context["count"]->setInt(0);
-	m_context["eye"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));
-	m_context["U"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));
+	m_context["count"]->setInt(0);					//these are CUDA functions and store initial data as zeros.
+	m_context["eye"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));	//count is counting number of simulations.
+	m_context["U"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));	//U,V,W 
 	m_context["V"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));
 	m_context["W"]->setFloat(make_float3(0.0f, 0.0f, 0.0f));
 
@@ -432,12 +432,12 @@ void Tutorial::trace(const RayGenCameraData& camera_data)
 
 
 
-		myfile.open("Eye_direction.csv");
+		myfile.open("Eye_direction.csv");	//Excel files to  store data
 		//myfile3.open("normal.csv");
 		myfile4.open("time.csv");
 
 
-		m_context["eye"]->setFloat(camera_data.eye);
+		m_context["eye"]->setFloat(camera_data.eye);	//Collect data from initialScene and set as a new camera for visualization
 		m_context["U"]->setFloat(camera_data.U);
 		m_context["V"]->setFloat(camera_data.V);
 		m_context["W"]->setFloat(camera_data.W);
