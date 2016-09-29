@@ -108,7 +108,7 @@ std::uniform_int_distribution<> dis(0, 720);	//uniform distribution between 0 an
 
 float area(double a[], double b[], double c[], int length);	//
 
-void material(Material box_matl, optix::Context m_context);		// Create geometry
+void material(Material box_matl, optix::Context m_context);		// Create geometry, material type can be chosen in Optix
 void material_parabola(Material box_matl, optix::Context m_context);	//All depend on closest hit or any hit or miss hit
 void material_object(Material box_matl, optix::Context m_context);
 
@@ -117,7 +117,7 @@ void CreateBox(optix::Context m_context, Geometry box, std::string box_ptx);
 void CreateTriangle(optix::Context m_context, Geometry triangle, std::string ptx_path);
 //void CreateTriangle2(optix::Context m_context, Geometry triangle, std::string ptx_path);
 
-void Face_center(void);
+void Face_center(void);	//Face center function gives the required triangle primitive`s centers
 
 
 
@@ -438,7 +438,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 
 		m_context["eye"]->setFloat(camera_data.eye);	//Collect data from initialScene and set as a new camera for visualization
-		m_context["U"]->setFloat(camera_data.U);
+		m_context["U"]->setFloat(camera_data.U);	//Initial camera data from Sample Scene assigned to trace
 		m_context["V"]->setFloat(camera_data.V);
 		m_context["W"]->setFloat(camera_data.W);
 
@@ -459,7 +459,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 
 
-		Buffer Vertex = m_context["vertex_buffer"]->getBuffer();	//It keeps the huge data of all points from GPU
+		Buffer Vertex = m_context["vertex_buffer"]->getBuffer();	//It keeps the huge data of all points from GPU in a buffer
 		//	Buffer Vertex_n = m_context["vertex_normal"]->getBuffer();
 
 		//Buffer points = m_context["points"]->getBuffer();
@@ -543,7 +543,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 		printf("\n\n source done");
 
-		m_context["top_object"]->set(geometrygroup);
+		m_context["top_object"]->set(geometrygroup);		//determine priority here.We assign most important objects
 		m_context["top_shadower"]->set(geometrygroup);
 		flag = false;
 
@@ -560,7 +560,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 		//myfile.open("sphere_rectangle.csv");
 		//RTresult RTAPI rtGeometryDestroy(GeometryGroup gemoetry_group 	geometry);
 
-		int flags = 0;
+		int flags = 0;						// ALmost every buffer, variable should be created for else part
 
 
 		m_context["flag"]->setInt(flags);
@@ -568,7 +568,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 
 
-		double time = GetTickCount();
+		double time = GetTickCount();	//store the starting time
 		double b = 0;
 		float final_end;
 		int flag = 1;
@@ -576,8 +576,8 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 		//	m_context["flag"]->setInt(flag);
 
-		m_context["eye"]->setFloat(camera_data.eye);
-		m_context["U"]->setFloat(camera_data.U);
+		m_context["eye"]->setFloat(camera_data.eye);	//Previous camera data also should be assign here for else
+		m_context["U"]->setFloat(camera_data.U);	//
 		m_context["V"]->setFloat(camera_data.V);
 		m_context["W"]->setFloat(camera_data.W);
 
@@ -750,8 +750,8 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 			//memcpy(Extinction->map(), enr, sizeof(enr));
 			//Extinction->unmap();
 			//m_context["Extinction"]->set(Extinction);
-			m_context->launch(0, static_cast<unsigned int>(buffer_width),
-				static_cast<unsigned int>(buffer_height));
+			m_context->launch(0, static_cast<unsigned int>(buffer_width),	//Everything(Calculation,view factor,geometries) is ready to launch
+				static_cast<unsigned int>(buffer_height));		//All reaction happens,starts with this "launch" function
 
 		}
 
@@ -856,9 +856,9 @@ void Tutorial::InsertModel(const std::string& name, GeometryGroup ggroup, Materi
 			if ((firstline[0] == 'f'))
 			{
 
-				const char * c = firstline.c_str();
-
-				int i1, i2, i3, i4, i5, i6, i7, i8, i9;
+				const char * c = firstline.c_str();	//Object files have #of surfaces, normal directions,locations,view factors,vectors
+									//Every line begins with name of information in that line
+				int i1, i2, i3, i4, i5, i6, i7, i8, i9;	//For example, faces line has "f" in first column of line or "vf" for view factor
 				if (6 == sscanf(c, "%*[^0123456789]%d%*[^0123456789]%d%*[^0123456789]%d%*[^0123456789]%d%*[^0123456789]%d%*[^0123456789]%d",
 					&i1,
 					&i2,
@@ -911,8 +911,8 @@ void Tutorial::createGeometry()
 {
 
 
-	const float matrix_0[4 * 4] = { 1.0, 0, 0, 0,
-		0, 1.0, 0, 4.5,
+	const float matrix_0[4 * 4] = { 1.0, 0, 0, 0,	//create matrixes as much as objects 
+		0, 1.0, 0, 4.5,				//to place them a place in our space
 		0, 0, 1.0, 0.0,
 		0, 0, 0, 1 };
 
@@ -964,9 +964,8 @@ void Tutorial::createGeometry()
 	box1->setPrimitiveCount(1u);
 	box1->setBoundingBoxProgram(box_bounds);
 
-	box1->setIntersectionProgram(box_intersect);
-
-
+	box1->setIntersectionProgram(box_intersect);	// to be able to know whether there is an object or not, 
+							//Optix intersectionprogram will do the job
 
 	box1["boxmin"]->setFloat(-1.0f, -1.0f, 2.25f);    //0.0f, 40000.0f, -600000.0f //0.3888889
 	box1["boxmax"]->setFloat(1.0f, 1.0f, 2.25f);
@@ -983,7 +982,7 @@ void Tutorial::createGeometry()
 
 	// Materials
 
-	Material box_matl = m_context->createMaterial();
+	Material box_matl = m_context->createMaterial();	//assign material type of object 
 	material(box_matl, m_context);
 
 
@@ -991,7 +990,7 @@ void Tutorial::createGeometry()
 	//parabola_matl = m_context->createMaterial();
 	// material_parabola(parabola_matl, m_context);
 
-	Material object_matl = m_context->createMaterial();
+	Material object_matl = m_context->createMaterial();		
 	material_object(object_matl, m_context);
 
 	// Create GIs for each piece of geometry
@@ -1050,7 +1049,8 @@ void Tutorial::createGeometry()
 	//rtAccelerationCreate(m_context, &accel);
 	//rtAccelerationSetBuilder(accel, "Trbvh");
 	//rtAccelerationSetTraverser(accel, "Bvh");
-	geometrygroup->setAcceleration(m_context->createAcceleration("Bvh", "Bvh"));
+	geometrygroup->setAcceleration(m_context->createAcceleration("Bvh", "Bvh"));  	//Bounding Volume Hierarchy
+											//there are bvh,sah,NoAcc but fastest is bvh.
 
 
 	m_context["top_object"]->set(geometrygroup);
@@ -1230,7 +1230,7 @@ void material(Material box_matl, Context m_context)
 	//Program box_ah = m_context->createProgramFromPTXFile(m_ptx_path, box_ahname);
 
 
-	box_matl->setClosestHitProgram(0, box_ch);
+	box_matl->setClosestHitProgram(0, box_ch);	//determine material type while creating instance with intersection
 	//	box_matl->setAnyHitProgram(0, box_ah);
 
 	Material matl = m_context->createMaterial();
