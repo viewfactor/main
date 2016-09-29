@@ -411,7 +411,7 @@ Buffer Tutorial::getOutputBuffer()
 
 
 
-void Tutorial::trace(const RayGenCameraData& camera_data)
+void Tutorial::trace(const RayGenCameraData& camera_data)	//most important function for visualization
 {
 
 
