@@ -459,7 +459,7 @@ void Tutorial::trace(const RayGenCameraData& camera_data)	//most important funct
 
 
 
-		Buffer Vertex = m_context["vertex_buffer"]->getBuffer();
+		Buffer Vertex = m_context["vertex_buffer"]->getBuffer();	//It keeps the huge data of all points from GPU
 		//	Buffer Vertex_n = m_context["vertex_normal"]->getBuffer();
 
 		//Buffer points = m_context["points"]->getBuffer();
