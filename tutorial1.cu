@@ -11,8 +11,8 @@
 //#include<random>
 
 
-rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
-rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
+rtDeclareVariable(float3, shading_normal, attribute shading_normal, );	//all basic functions to create geometry occurs here,
+rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );//Defined functions can be used in everywhere  
 rtDeclareVariable(int, primid, attribute primid, );
 
 rtDeclareVariable(PerRayData_radiance, prd_radiance, rtPayload, );
@@ -36,7 +36,7 @@ static __device__ __inline__ float fold(const float value)
 //
 // Pinhole camera implementation
 //
-rtDeclareVariable(float3, eye, , );
+rtDeclareVariable(float3, eye, , );		//we use them in main code for calculation camera and visualization camera
 rtDeclareVariable(float3, U, , );
 rtDeclareVariable(float3, V, , );
 rtDeclareVariable(float3, W, , );
@@ -47,7 +47,7 @@ rtDeclareVariable(float3, bad_color, , );
 rtBuffer<uchar4, 2>              output_buffer;
 
 
-rtBuffer<float3, 1>            normals;
+rtBuffer<float3, 1>            normals;		//buffers provide temporary memory for us to be able to pass them to other variables
 rtBuffer<float3, 1>            centers;
 rtBuffer<float3, 1>            vertex_buffer;
 //rtBuffer<float3, 1>            points;
@@ -94,18 +94,18 @@ RT_PROGRAM void random_camera()
 	size_t2 screen = output_buffer.size();
 
 	float2 d = make_float2(launch_index) / make_float2(screen) * 2.f - 1.f;
-	float3 ray_origin = eye;
-	float3 ray_direction = normalize(d.x*U + d.y*V + W);
+	float3 ray_origin = eye;							//ray source point
+	float3 ray_direction = normalize(d.x*U + d.y*V + W);				// make unit position to real position
 
-	optix::Ray ray(ray_origin, ray_direction, radiance_ray_type, scene_epsilon);
+	optix::Ray ray(ray_origin, ray_direction, radiance_ray_type, scene_epsilon);	//its generation function
 
-	PerRayData_radiance prd;
+	PerRayData_radiance prd;	
 	prd.importance = 1.f;
 	prd.depth = 0;
 
-	rtTrace(top_object, ray, prd);
+	rtTrace(top_object, ray, prd);							//important function to trace and find intersection point
 
-	output_buffer[launch_index] = make_color(prd.result);
+	output_buffer[launch_index] = make_color(prd.result);				//demonstrate result as different colors
 
 }
 
