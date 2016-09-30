@@ -122,12 +122,12 @@ RT_PROGRAM void pinhole_camera()
 	size_t2 screen = output_buffer.size();
 
 	uint2 seed;
-	seed.x = tea<16>(count + screen.x*launch_index.y + launch_index.x, (count + 100));
-	seed.y = tea<16>(count + screen.y*launch_index.x + launch_index.y, (count + 100));
+	seed.x = tea<16>(count + screen.x*launch_index.y + launch_index.x, (count + 100));	//it designs display screen
+	seed.y = tea<16>(count + screen.y*launch_index.x + launch_index.y, (count + 100));	//determine the boundaries
 	uint seedz = tea<16>(2 + +screen.y*launch_index.x + launch_index.y, 112);
 
-	uint seez = seed.x + seed.y;
-	double r1 = rnd(seed.x);
+	uint seez = seed.x + seed.y;		
+	double r1 = rnd(seed.x);		//find some random numbers
 	double r2 = rnd(seed.y);
 	double r3 = rnd((seez));
 
@@ -179,7 +179,7 @@ RT_PROGRAM void pinhole_camera()
 
 	//random
 
-
+								//make unit again from cross product
 
 
 	double rad = length(W_normal);   //W_normal
@@ -283,12 +283,12 @@ RT_PROGRAM void closest_hit_radiance1()
 
 	//rtPrintf("\n\n vf of prim id %f is %f", hitting_prim[6000], total_prim[6000]);
 
-	float r = min(max(0.0f, 1.5 - abs(1 - 4 * (vf - 0.4))), 1.0f);
-	float g = min(max(0.0f, 1.5 - abs(1 - 4 * (vf - 0.15))), 1.0f);
+	float r = min(max(0.0f, 1.5 - abs(1 - 4 * (vf - 0.4))), 1.0f);		//all the color distribution depends on these equations
+	float g = min(max(0.0f, 1.5 - abs(1 - 4 * (vf - 0.15))), 1.0f);		//
 	float b = min(max(0.0f, 1.5 - abs(1 - 4 * vf)), 1.0f);
 
 
-	prd_radiance.result = make_float3(r, g, b);  //Extinction[prim_index]
+	prd_radiance.result = make_float3(r, g, b);  //Extinction[prim_index]	//result is in shape of color
 	//prd_radiance.result = make_float3(1.0, 0.0, 0.0);
 
 }
@@ -297,8 +297,8 @@ RT_PROGRAM void closest_hit_radiance_object()
 {
 
 	//hitting_normal[count] = ffnormal;
-	int countt = atomicAdd(&out3[0], 1);
-
+	int countt = atomicAdd(&out3[0], 1);		//to calculate viewfactor, we need to know hitted and total rays
+							//Also, to know the area hitted and total primitives 
 	int id = prd_radiance.prim;
 
 
@@ -318,19 +318,11 @@ RT_PROGRAM void exception()
 }
 
 RT_PROGRAM void any_hit() // object
-{
-
-
-
-
-}
+{}
 
 
 RT_PROGRAM void any_hit2()  // box_matl (source)
-{
-
-
-}
+{}
 
 RT_PROGRAM void closest_hit_radiance_test()
 {
