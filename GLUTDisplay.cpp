@@ -1014,7 +1014,7 @@ void GLUTDisplay::moveCameraWithKey()
 
 }
 
-void GLUTDisplay::idle()
+void GLUTDisplay::idle()	//Faizan did this to reshow main page after every simulations
 {
 	/* if (m_special_key >= 0) {
 	moveCameraWithKey();
