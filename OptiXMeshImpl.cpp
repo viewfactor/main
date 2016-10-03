@@ -313,9 +313,9 @@ struct OptiXMeshImpl::CreateGeometriesFunctor {
 		m_mesh.m_context["vertex_buffer"]->setBuffer(m_mesh.m_vbuffer);      // to pass the vertices in ray generation program
 
 
-		m_mesh.setGeoVindexBuffer(geo, vindex_buffer);
-
-
+		m_mesh.setGeoVindexBuffer(geo, vindex_buffer);			//!!!create a buffer to use vertex variables
+										//in anywhere ,like .cpp, .cu
+				
 
 		geo["normal_buffer"]->setBuffer(m_mesh.m_nbuffer);
 
